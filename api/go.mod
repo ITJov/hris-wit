@@ -25,7 +25,6 @@ require (
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/viper v1.11.0
 	go.elastic.co/apm/module/apmsql v1.15.0
-	golang.org/x/crypto v0.37.0
 	google.golang.org/genproto v0.0.0-20220407144326-9054f6ed7bac
 	google.golang.org/grpc v1.45.0
 	google.golang.org/protobuf v1.28.0
@@ -68,6 +67,7 @@ require (
 	github.com/valyala/fasttemplate v1.2.2 // indirect
 	go.elastic.co/apm v1.15.0 // indirect
 	go.elastic.co/fastjson v1.1.0 // indirect
+	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.17.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
