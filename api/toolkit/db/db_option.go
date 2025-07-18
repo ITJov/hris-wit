@@ -16,11 +16,12 @@ const (
 
 // Option - database option.
 type Option struct {
-	Host         string
-	Port         int
-	Username     string
-	Password     string
-	DatabaseName string
+	Host          string
+	Port          int
+	Username      string
+	Password      string
+	DatabaseName  string
+	ConnectionURL string
 	*ConnectionOption
 }
 

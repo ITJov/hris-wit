@@ -3,16 +3,21 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"os" // <--- Import ini untuk membaca environment variables
 
 	"github.com/wit-id/blueprint-backend-go/toolkit/config"
 	"github.com/wit-id/blueprint-backend-go/toolkit/db"
 )
 
 func NewFromConfig(cfg config.KVStore, path string) (*sql.DB, error) {
+	databaseURL := os.Getenv("DATABASE_URL")
+
+	opt := &db.Option{}
+
 	connOpt := db.DefaultConnectionOption()
 
 	if maxIdle := cfg.GetInt(fmt.Sprintf("%s.conn.max-idle", path)); maxIdle > 0 {
-		connOpt.MaxIdle = cfg.GetInt(fmt.Sprintf("%s.conn.max-idle", path))
+		connOpt.MaxIdle = maxIdle
 	}
 
 	if maxOpen := cfg.GetInt(fmt.Sprintf("%s.conn.max-open", path)); maxOpen > 0 {
@@ -31,16 +36,17 @@ func NewFromConfig(cfg config.KVStore, path string) (*sql.DB, error) {
 		connOpt.KeepAliveCheckInterval = keepAlive
 	}
 
-	opt, err := db.NewDatabaseOption(
-		cfg.GetString(fmt.Sprintf("%s.host", path)),
-		cfg.GetInt(fmt.Sprintf("%s.port", path)),
-		cfg.GetString(fmt.Sprintf("%s.username", path)),
-		cfg.GetString(fmt.Sprintf("%s.password", path)),
-		cfg.GetString(fmt.Sprintf("%s.schema", path)),
-		connOpt,
-	)
-	if err != nil {
-		return nil, err
+	opt.ConnectionOption = connOpt
+
+	if databaseURL != "" {
+		opt.ConnectionURL = databaseURL
+	} else {
+
+		opt.Host = cfg.GetString(fmt.Sprintf("%s.host", path))
+		opt.Port = cfg.GetInt(fmt.Sprintf("%s.port", path))
+		opt.Username = cfg.GetString(fmt.Sprintf("%s.username", path))
+		opt.Password = cfg.GetString(fmt.Sprintf("%s.password", path))
+		opt.DatabaseName = cfg.GetString(fmt.Sprintf("%s.schema", path))
 	}
 
 	return NewPostgresDatabase(opt)

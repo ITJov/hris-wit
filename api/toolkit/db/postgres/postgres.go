@@ -20,17 +20,27 @@ import (
 // NewPostgresDatabase - create & validate postgres connection given certain db.Option
 // the caller have the responsibility to close the *sqlx.DB when succeed.
 func NewPostgresDatabase(opt *db.Option) (*sql.DB, error) {
-	connURL := &url.URL{
-		Scheme: "postgres",
-		User:   url.UserPassword(opt.Username, opt.Password),
-		Host:   fmt.Sprintf("%s:%d", opt.Host, opt.Port),
-		Path:   opt.DatabaseName,
-	}
-	q := connURL.Query()
-	q.Add("sslmode", "disable")
-	connURL.RawQuery = q.Encode()
+	var connStr string // Variabel untuk menyimpan string koneksi akhir
 
-	db, err := apmsql.Open("postgres", connURL.String())
+	if opt.ConnectionURL != "" {
+		connStr = opt.ConnectionURL
+		log.Println("Using DATABASE_URL from db.Option.ConnectionURL")
+	} else {
+		connURL := &url.URL{
+			Scheme: "postgres",
+			User:   url.UserPassword(opt.Username, opt.Password),
+			Host:   fmt.Sprintf("%s:%d", opt.Host, opt.Port),
+			Path:   opt.DatabaseName,
+		}
+		q := connURL.Query()
+
+		q.Add("sslmode", "require")
+		connURL.RawQuery = q.Encode()
+		connStr = connURL.String()
+		log.Println("Constructing database URL from individual parameters (config.yaml)")
+	}
+
+	db, err := apmsql.Open("postgres", connStr)
 	if err != nil {
 		return nil, errors.Wrap(err, "postgres: failed to open connection")
 	}
@@ -42,11 +52,14 @@ func NewPostgresDatabase(opt *db.Option) (*sql.DB, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), opt.ConnectionOption.ConnectTimeout)
 	defer cancel()
 
-	_ = db.QueryRowContext(ctx, "SELECT 1")
+	err = db.PingContext(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "postgres: failed to ping database: %w")
+	}
 
-	log.Println("successfully connected to postgres", connURL.Host)
+	log.Println("successfully connected to postgres", connStr)
 
-	go doKeepAliveConnection(db, opt.DatabaseName, opt.KeepAliveCheckInterval)
+	go doKeepAliveConnection(db, opt.DatabaseName, opt.ConnectionOption.KeepAliveCheckInterval)
 
 	return db, nil
 }
@@ -56,8 +69,7 @@ func NewFakePostgresDB() (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
-
+	
 	return db, nil
 }
 
