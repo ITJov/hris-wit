@@ -1,5 +1,5 @@
 import { useEffect, useState, FormEvent, ChangeEvent } from "react";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { Button, Select, TextInput, Textarea, Label, FileInput } from "flowbite-react";
@@ -61,10 +61,10 @@ export default function InsertInventoryForm() {
     const fetchDropdowns = async () => {
       try {
         const [vendorRes, categoryRes, roomRes, brandRes] = await Promise.all([
-          axios.get("http://localhost:6969/vendor", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:6969/kategori", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:6969/ruangan", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:6969/brand", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/vendor", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/kategori", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/ruangan", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/brand", { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         setVendors(vendorRes.data.data);
         setCategories(categoryRes.data.data);
@@ -114,7 +114,7 @@ export default function InsertInventoryForm() {
     }
 
     try {
-      await axios.post("http://localhost:6969/inventaris/insert", formData, {
+      await api.post("/inventaris/insert", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

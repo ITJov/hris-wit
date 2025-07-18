@@ -1,6 +1,6 @@
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import { Label, TextInput, Select, Textarea, FileInput, Button } from "flowbite-react";
@@ -24,13 +24,13 @@ export default function UpdateInventarisPage() {
     const fetchData = async () => {
       try {
         const [res, brandRes, vendorRes, roomRes, catRes] = await Promise.all([
-          axios.get(`http://localhost:6969/inventaris/with-relations/${id}`, {
+          api.get(`/inventaris/with-relations/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
-          axios.get("http://localhost:6969/brand", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:6969/vendor", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:6969/ruangan", { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get("http://localhost:6969/kategori", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/brand", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/vendor", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/ruangan", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/kategori", { headers: { Authorization: `Bearer ${token}` } }),
         ]);
 
         const item = res.data.data;
@@ -109,7 +109,7 @@ export default function UpdateInventarisPage() {
     }
 
     try {
-      await axios.put(`http://localhost:6969/inventaris/update/${id}`, formData, {
+      await api.put(`/inventaris/update/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",

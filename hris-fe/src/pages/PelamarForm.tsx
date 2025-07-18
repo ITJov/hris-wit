@@ -1,6 +1,6 @@
 import { useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../utils/api';
 import { useNavigate } from "react-router-dom";
 
 
@@ -34,7 +34,7 @@ export default function PelamarForm() {
         async function fetchJob() {
             if (!idLowongan) return;
             try {
-                const response = await axios.get(`http://localhost:6969/lowongan/${idLowongan}`);
+                const response = await api.get(`/lowongan/${idLowongan}`);
                 setJob(response.data.data);
             } catch {
                 alert("Gagal memuat detail lowongan");

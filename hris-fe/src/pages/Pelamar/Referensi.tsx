@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePelamar } from "./Pelamar.tsx";
-import axios from "axios";
+import api from '../../utils/api.ts';
 
 export interface Referensi {
     nama: string;
@@ -78,7 +78,7 @@ export default function Referensi() {
         console.log("Final payload yang dikirim (sudah snake_case):", finalPayload);
 
         try {
-            await axios.post("http://localhost:6969/pelamar/insert", finalPayload);
+            await api.post("/pelamar/insert", finalPayload);
             alert("Data lamaran berhasil dikirim!");
             navigate("/karyawan/daftarkaryawan");
         } catch (err) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import { Table, Button } from "flowbite-react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -50,7 +50,7 @@ export default function InventoryList() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:6969/inventaris/with-relations", {
+        const res = await api.get("/inventaris/with-relations", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

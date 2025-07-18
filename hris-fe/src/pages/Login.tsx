@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios, { AxiosError } from "axios";
+import api from '../utils/api';
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -11,7 +11,7 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const authTokenResponse = await axios.post("http://localhost:6969/token/auth", {
+            const authTokenResponse = await api.post("/token/auth", {
                 email,
                 password,
                 app_name: "wit-dev",
@@ -21,8 +21,8 @@ export default function Login() {
             });
 
             const authToken = authTokenResponse.data.data.token;
-            const loginResponse = await axios.post(
-                "http://localhost:6969/authorization/backoffice/login",
+            const loginResponse = await api.post(
+                "/authorization/backoffice/login",
                 { email, password },
                 {
                     headers: {
@@ -37,11 +37,8 @@ export default function Login() {
             alert("Login berhasil!");
             navigate("/dashboard");
         } catch (err: unknown) {
-            const axiosErr = err as AxiosError<{ message?: string }>;
-            console.error("Response error:", axiosErr.response);
-
-            const msg = axiosErr.response?.data?.message || "Email atau password salah!";
-            alert(msg);
+            console.error("Response error:");
+            alert("Email atau password salah!");
         }
     };
 

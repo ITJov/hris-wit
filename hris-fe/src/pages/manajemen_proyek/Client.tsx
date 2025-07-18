@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css'; 
 import { toast, ToastContainer } from 'react-toastify';
-import axios from 'axios';
+import api from '../../utils/api.ts';
 
 // --- INTERFACE ---
 interface Client {
@@ -47,14 +47,12 @@ export default function ClientList() {
     created_by: 'admin',
   });
 
-  const API_BASE_URL = 'http://localhost:6969';
-
   const fetchData = async () => {
     setLoading(true);
     try {
       const [clientsResponse, projectsResponse] = await Promise.all([
-        axios.get(`${API_BASE_URL}/client`),
-        axios.get(`${API_BASE_URL}/project`),
+        api.get(`/client`),
+        api.get(`/project`),
       ]);
       setClients(clientsResponse.data.data || []);
       setProjects(projectsResponse.data.data || []);
@@ -114,7 +112,7 @@ export default function ClientList() {
         billing_address: currentClient.billing_address.String,
         created_by: currentClient.created_by,
       };
-      await axios.put(`${API_BASE_URL}/client/${currentClient.client_id}`, updatedData);
+      await api.put(`/client/${currentClient.client_id}`, updatedData);
       toast.success('Data klien berhasil diperbarui!');
       await fetchData(); 
       handleCloseModals();
@@ -127,7 +125,7 @@ export default function ClientList() {
   const handleInsertSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE_URL}/client`, newClient);
+      await api.post(`/client`, newClient);
       toast.success('Berhasil menambahkan klien!');
       await fetchData(); 
       handleCloseModals();
@@ -140,7 +138,7 @@ export default function ClientList() {
   const handleDelete = async (clientId: string) => {
     if (!window.confirm(`Yakin ingin menghapus klien ${clientId}?`)) return;
     try {
-      await axios.delete(`${API_BASE_URL}/client/${clientId}`);
+      await api.delete(`/client/${clientId}`);
       setClients(prev => prev.filter(client => client.client_id !== clientId));
       toast.success('Klien berhasil dihapus!');
     } catch (error) {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, Badge } from "flowbite-react";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import { toast } from "react-toastify";
 
 interface Peminjaman {
@@ -51,7 +51,7 @@ export default function DaftarPeminjamanPage() {
         setLoading(true);
         setError(null);
         
-        const response = await axios.get<{data: Peminjaman[], message: string}>("http://localhost:6969/peminjaman/my-list", {
+        const response = await api.get<{data: Peminjaman[], message: string}>("/peminjaman/my-list", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

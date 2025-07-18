@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api.ts';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { toast, ToastContainer } from 'react-toastify'; 
@@ -59,15 +59,13 @@ export default function Report() {
   const [emailSubject, setEmailSubject] = useState(`Laporan Progres - ${new Date().toLocaleDateString('id-ID')}`);
   const [senderName, setSenderName] = useState('');
 
-  const API_BASE_URL = 'http://localhost:6969';
-
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         const [projectsResponse, tasksResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/project`),
-          axios.get(`${API_BASE_URL}/task`),
+          api.get(`/project`),
+          api.get(`/task`),
         ]);
 
         const fetchedProjects = projectsResponse.data?.data || [];
@@ -76,7 +74,7 @@ export default function Report() {
 
         if (fetchedProjects.length > 0) {
           const listPromises = fetchedProjects.map((project: Project) =>
-            axios.get(`${API_BASE_URL}/project/${project.project_id}/lists`)
+            api.get(`/project/${project.project_id}/lists`)
           );
 
           const listResults = await Promise.allSettled(listPromises);
@@ -166,7 +164,7 @@ export default function Report() {
         body_html: editorContent,
       };
 
-      const response = await axios.post(`${API_BASE_URL}/send-report-email`, emailData);
+      const response = await api.post(`/send-report-email`, emailData);
 
       if (response.status === 200) {
         toast.update(sendingToastId, { render: "Laporan berhasil dikirim!", type: "success", isLoading: false, autoClose: 3000 }); 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../utils/api.ts';
 import { useParams } from 'react-router-dom';
 import { StrictModeDroppable as Droppable } from './StrictModeDroppable';
 import { DragDropContext, Draggable, DropResult } from 'react-beautiful-dnd';
@@ -56,12 +56,10 @@ export default function ProjectDetail() {
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [editingListName, setEditingListName] = useState<string>('');
 
-  const API_BASE_URL = 'http://localhost:6969';
-
   const fetchLists = async () => {
       if (!projectId) return;
       try {
-          const response = await axios.get(`${API_BASE_URL}/project/${projectId}/lists`);
+          const response = await api.get(`/project/${projectId}/lists`);
           const fetchedLists = response.data.data.map((list: any) => ({
               ...list,
               list_order: list.list_order || { Float64: 0, Valid: false }
@@ -78,7 +76,7 @@ export default function ProjectDetail() {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/task`);
+      const response = await api.get(`/task`);
       setTasks(response.data.data || []);
     } catch (error) {
       console.error('Error fetching tasks:', error);
@@ -90,7 +88,7 @@ export default function ProjectDetail() {
     const fetchProjectDetails = async () => {
         if (!projectId) return;
       try {
-        const response = await axios.get(`${API_BASE_URL}/project/${projectId}`);
+        const response = await api.get(`/project/${projectId}`);
         setProject(response.data.data);
       } catch (error) {
         console.error('Error fetching project details:', error);
@@ -137,7 +135,7 @@ export default function ProjectDetail() {
         created_by: 'admin',
         list_order: Date.now(), 
       };
-      await axios.post(`${API_BASE_URL}/project/${projectId}/lists`, newListData);
+      await api.post(`/project/${projectId}/lists`, newListData);
       await fetchLists();
       setNewList('');
       toast.success('List baru berhasil ditambahkan.');
@@ -150,7 +148,7 @@ export default function ProjectDetail() {
   const handleDeleteList = async (listId: string) => {
     if (!window.confirm("Yakin ingin menghapus list ini? Semua tugas di dalamnya akan ikut terhapus.")) return;
     try {
-      await axios.delete(`${API_BASE_URL}/project/${projectId}/lists/${listId}`);
+      await api.delete(`/project/${projectId}/lists/${listId}`);
       await fetchLists();
       await fetchTasks();
       toast.success('List berhasil dihapus.');
@@ -173,7 +171,7 @@ export default function ProjectDetail() {
   const handleSaveListName = async (listId: string) => {
     if (editingListName.trim() === '') return;
     try {
-      await axios.put(`${API_BASE_URL}/project/${projectId}/lists/${listId}`, {
+      await api.put(`/project/${projectId}/lists/${listId}`, {
         list_name: editingListName,
         updated_by: 'admin_edit_list'
       });
@@ -190,7 +188,7 @@ export default function ProjectDetail() {
     if (newTaskName.trim() === '') return;
     try {
         const newTaskPayload = { list_id: listId, task_name: newTaskName, created_by: 'admin', task_status: 'open' };
-        await axios.post(`${API_BASE_URL}/task`, newTaskPayload);
+        await api.post(`/task`, newTaskPayload);
         await fetchTasks();
         setNewTaskName('');
         setAddingToListId(null);
@@ -203,7 +201,7 @@ export default function ProjectDetail() {
   const handleDeleteTask = async (taskId: string) => {
     if (!window.confirm('Yakin ingin menghapus tugas ini?')) return;
     try {
-      await axios.delete(`${API_BASE_URL}/task/${taskId}`);
+      await api.delete(`/task/${taskId}`);
       setTasks(tasks.filter((task) => task.task_id !== taskId));
       setEditingTask(null);
       toast.success('Tugas berhasil dihapus.');
@@ -225,7 +223,7 @@ export default function ProjectDetail() {
     if (!editingTask || !editFormData) return;
     const payload = { ...editFormData, task_id: editingTask.task_id, list_id: editingTask.list_id, updated_by: 'admin_edit' };
     try {
-      await axios.put(`${API_BASE_URL}/task/${editingTask.task_id}`, payload);
+      await api.put(`/task/${editingTask.task_id}`, payload);
       await fetchTasks();
       setEditingTask(null);
       toast.success('Tugas berhasil diperbarui.');
@@ -272,7 +270,7 @@ export default function ProjectDetail() {
 
     console.log('Payload sent to backend for list order update:', payload);
 
-    axios.put(`${API_BASE_URL}/project/${projectId}/lists/${draggableId}`, payload)
+    api.put(`/project/${projectId}/lists/${draggableId}`, payload)
         .then(() => {
             toast.success('Urutan list berhasil diperbarui!');
         })
@@ -317,7 +315,7 @@ export default function ProjectDetail() {
       const finalTasks = tasks.map(t => t.task_id === draggableId ? updatedTask : t);
       setTasks(finalTasks);
       const payload = buildUpdatePayload(taskToMove, { list_id: source.droppableId, task_order: newOrder }); 
-      axios.put(`${API_BASE_URL}/task/${draggableId}`, payload).catch(_err => { fetchTasks(); });
+      api.put(`/task/${draggableId}`, payload).catch(_err => { fetchTasks(); });
       return;
     }
 
@@ -334,7 +332,7 @@ export default function ProjectDetail() {
     const finalTasks = tasks.map(t => t.task_id === draggableId ? { ...t, list_id: destination.droppableId, task_order: { Float64: newOrder, Valid: true } } : t);
     setTasks(finalTasks);
     const payload = buildUpdatePayload(taskToMove, { list_id: destination.droppableId, task_order: newOrder });
-    axios.put(`${API_BASE_URL}/task/${draggableId}`, payload).catch(_error => { fetchTasks(); });
+    api.put(`/task/${draggableId}`, payload).catch(_error => { fetchTasks(); });
   };
 
   if (!project) return <div className="p-8 text-center">Loading...</div>;

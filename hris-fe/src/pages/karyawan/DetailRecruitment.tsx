@@ -1,6 +1,6 @@
   import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import axios from "axios";
+  import api from '../../utils/api.ts';
 
 interface NullableString {
     String: string;
@@ -27,7 +27,7 @@ export default function DetailRecruitment() {
     useEffect(() => {
         async function fetchDetail() {
             try {
-                const response = await axios.get(`http://localhost:6969/lowongan/${id}`);
+                const response = await api.get(`/lowongan/${id}`);
                 setJob(response.data.data);
             } catch (error) {
                 console.error("Gagal load detail lowongan", error);
@@ -80,7 +80,7 @@ export default function DetailRecruitment() {
                     onClick={async () => {
                         if (window.confirm("Yakin ingin menghapus lowongan ini?")) {
                             try {
-                                await axios.delete(`http://localhost:6969/lowongan/${job.id_lowongan_pekerjaan}`);
+                                await api.delete(`/lowongan/${job.id_lowongan_pekerjaan}`);
                                 alert("Lowongan berhasil dihapus");
                                 navigate("/karyawan/recruitment");
                             } catch (error) {

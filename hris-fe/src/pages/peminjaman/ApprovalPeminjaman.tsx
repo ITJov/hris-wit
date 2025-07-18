@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Card } from "flowbite-react";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import { toast } from "react-toastify";
 
 interface PendingPeminjaman {
@@ -35,7 +35,7 @@ export default function ApprovalPeminjamanPage() {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get<{data: PendingPeminjaman[], message: string}>("http://localhost:6969/peminjaman/approval/pending", {
+        const response = await api.get<{data: PendingPeminjaman[], message: string}>("/peminjaman/approval/pending", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const transformedData = response.data.data.map((item: any) => ({
@@ -64,8 +64,8 @@ export default function ApprovalPeminjamanPage() {
     const actionText = status === "approve" ? "menyetujui" : "menolak";
 
     try {
-      await axios.post(
-        `http://localhost:6969${endpoint}`,
+      await api.post(
+        `${endpoint}`,
         {}, 
         { headers: { Authorization: `Bearer ${token}` } }
       );

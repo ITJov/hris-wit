@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api.ts';
 
 interface Pegawai {
     id_data_pegawai: string;
@@ -13,7 +13,7 @@ export default function DataPegawai() {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get('http://localhost:6969/pegawai')
+        api.get('/pegawai')
             .then((res) => {
                 if (Array.isArray(res.data.data)) {
                     setPegawaiList(res.data.data);

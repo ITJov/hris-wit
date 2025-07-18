@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import { toast } from "react-toastify";
 import { Button } from "flowbite-react";
 import Swal from "sweetalert2";
@@ -30,7 +30,7 @@ export default function InventarisDetailPage() {
   useEffect(() => {
     const fetchDetail = async () => {
       try {
-        const res = await axios.get(`http://localhost:6969/inventaris/with-relations/${id}`, {
+        const res = await api.get(`/inventaris/with-relations/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -84,7 +84,7 @@ export default function InventarisDetailPage() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`http://localhost:6969/inventaris/delete/${id}`, {
+        await api.delete(`/inventaris/delete/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         toast.success("Inventaris berhasil dihapus");

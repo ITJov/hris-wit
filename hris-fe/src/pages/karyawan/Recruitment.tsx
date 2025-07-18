@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../../utils/api.ts';
 
 interface NullableString {
     String: string;
@@ -24,7 +24,7 @@ export default function Recruitment() {
     useEffect(() => {
         async function fetchJobs() {
             try {
-                const response = await axios.get("http://localhost:6969/lowongan");
+                const response = await api.get("/lowongan");
                 setJobs(response.data.data);
             } catch (error) {
                 console.error("Gagal load data lowongan", error);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../utils/api.ts';
 import { Link } from 'react-router-dom';
 
 // Type definitions
@@ -47,7 +47,7 @@ export default function DaftarPelamar() {
 
     const fetchPelamar = async () => {
         try {
-            const res = await axios.get('http://localhost:6969/pelamar');
+            const res = await api.get('/pelamar');
             if (Array.isArray(res.data.data)) {
                 setPelamarList(res.data.data);
             } else {
@@ -96,8 +96,8 @@ export default function DaftarPelamar() {
             .map(p => p.id_data_pelamar);
 
         try {
-            await axios.put(
-                'http://localhost:6969/pelamar/update-status',
+            await api.put(
+                '/pelamar/update-status',
                 {
                     ids: uniqueIdsToUpdate,
                     status: btoa(newStatus),

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import { Button, Label, Textarea, Modal, Select } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -59,7 +59,7 @@ export default function AjukanPeminjamanPage() {
     const fetchAvailableInventaris = async () => {
       try {
         setLoadingInventaris(true);
-        const response = await axios.get<{data: AvailableInventaris[], message: string}>("http://localhost:6969/peminjaman/available-inventaris", {
+        const response = await api.get<{data: AvailableInventaris[], message: string}>("/peminjaman/available-inventaris", {
           headers: { Authorization: `Bearer ${token}` }
         });
         const transformedData = response.data.data.map((item: any) => ({
@@ -83,7 +83,7 @@ export default function AjukanPeminjamanPage() {
     const fetchOverduePeminjaman = async () => {
       try {
         setLoadingOverdue(true);
-        const response = await axios.get<{data: OverduePeminjaman[], message: string}>("http://localhost:6969/peminjaman/my-overdue", {
+        const response = await api.get<{data: OverduePeminjaman[], message: string}>("/peminjaman/my-overdue", {
           headers: { Authorization: `Bearer ${token}` }
         });
         setOverduePeminjamanList(response.data.data);
@@ -112,7 +112,7 @@ export default function AjukanPeminjamanPage() {
 
     setIsSubmitting(true);
     try {
-      await axios.post("http://localhost:6969/peminjaman", {
+      await api.post("/peminjaman", {
         inventaris_id: selectedInventarisId,
         tgl_pinjam: tanggalMulai,
         tgl_kembali: tanggalKembali,
@@ -135,7 +135,7 @@ export default function AjukanPeminjamanPage() {
   const handleReturnInventaris = async (peminjamanId: string) => {
     setIsSubmitting(true);
     try {
-        await axios.put(`http://localhost:6969/peminjaman/${peminjamanId}`, {
+        await api.put(`/peminjaman/${peminjamanId}`, {
             tgl_pinjam: overduePeminjamanList.find(item => item.peminjaman_id === peminjamanId)?.tanggal_pinjam,
             tgl_kembali: new Date().toISOString().split('T')[0],
             status_peminjaman: "Tidak Dipinjam",

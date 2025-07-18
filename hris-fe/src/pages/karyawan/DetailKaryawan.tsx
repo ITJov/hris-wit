@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from '../../utils/api.ts';
 
 // --- DEFINISI TIPE DATA ---
 
@@ -261,7 +261,7 @@ export default function DetailKaryawan() {
 
     useEffect(() => {
         if (id_data_pelamar) {
-            axios.get(`http://localhost:6969/pelamar/${id_data_pelamar}`)
+            api.get(`/pelamar/${id_data_pelamar}`)
                 .then(res => {
                     console.log("Response data pelamar:", res.data.data);
                     setPelamar(res.data.data);

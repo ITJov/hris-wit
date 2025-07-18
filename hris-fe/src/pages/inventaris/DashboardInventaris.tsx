@@ -2,7 +2,7 @@ import { Card } from "flowbite-react";
 import { Badge } from "flowbite-react";
 import Chart from "react-apexcharts";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import { toast } from "react-toastify";
 
 // Definisi Interface untuk struktur data dari backend
@@ -85,7 +85,7 @@ export default function DashboardInventaris() {
         setLoading(true);
         setError(null);
 
-        const response = await axios.get<{data: DashboardData, message: string}>("http://localhost:6969/dashboard", {
+        const response = await api.get<{data: DashboardData, message: string}>("/dashboard", {
           headers: {
             Authorization: `Bearer ${token}`,
           },

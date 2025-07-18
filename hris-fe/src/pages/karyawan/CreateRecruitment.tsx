@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from '../../utils/api.ts';
 import { useNavigate } from "react-router-dom";
 
 export default function CreateRecruitment() {
@@ -23,7 +23,7 @@ export default function CreateRecruitment() {
         try {
             setLoading(true);
 
-            await axios.post("http://localhost:6969/lowongan/insert", {
+            await api.post("/lowongan/insert", {
                 posisi,
                 tgl_buka_lowongan: tglBuka,
                 tgl_tutup_lowongan: tglTutup,
@@ -45,9 +45,6 @@ export default function CreateRecruitment() {
 
         } catch (error: unknown) {
             let message = "Gagal membuat lowongan pekerjaan.";
-            if (axios.isAxiosError(error) && error.response?.data?.message) {
-                message = error.response.data.message;
-            }
 
             alert(message);
             console.error(error);

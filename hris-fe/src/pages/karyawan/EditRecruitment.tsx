@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios, { AxiosError } from "axios";
+import api from '../../utils/api.ts';
 
 interface NullableString {
     String: string;
@@ -33,7 +33,7 @@ export default function EditRecruitment() {
     useEffect(() => {
         async function fetchJob() {
             try {
-                const response = await axios.get(`http://localhost:6969/lowongan/${id}`);
+                const response = await api.get(`/lowongan/${id}`);
                 const job: JobDetail = response.data.data;
 
                 setPosisi(job.posisi);
@@ -58,7 +58,7 @@ export default function EditRecruitment() {
         e.preventDefault();
 
         try {
-            await axios.put(`http://localhost:6969/lowongan/${id}`, {
+            await api.put(`/lowongan/${id}`, {
                 posisi,
                 tgl_buka_lowongan: tglBuka,
                 tgl_tutup_lowongan: tglTutup,
@@ -70,9 +70,7 @@ export default function EditRecruitment() {
             alert("Lowongan berhasil diperbarui");
             navigate("/karyawan/recruitment");
         } catch (err) {
-            const axiosErr = err as AxiosError<{ message?: string }>;
-            const msg = axiosErr.response?.data?.message || "Gagal memperbarui lowongan";
-            alert(msg);
+            alert("Gagal memperbarui lowongan");
         }
     };
 
