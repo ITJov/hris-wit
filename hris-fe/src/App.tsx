@@ -35,6 +35,8 @@ import ListPeminjaman from "./pages/peminjaman/AjukanPeminjaman.tsx"
 import ListPengajuan from "./pages/peminjaman/DaftarPeminjaman.tsx"
 import ApprovalPeminjaman from "./pages/peminjaman/ApprovalPeminjaman.tsx"
 
+console.log('DEBUG: VITE_API_BASE_URL resolved to:', import.meta.env.VITE_API_BASE_URL);
+
 function App() {
     return (
         <Routes>
