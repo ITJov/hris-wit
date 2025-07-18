@@ -128,8 +128,7 @@ func updateInventaris(svc *service.InventarisService, cfg config.KVStore) echo.H
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Gagal menyimpan gambar"})
 			}
-			baseURL := "http://localhost:6969"
-			request.ImageURL = baseURL + savePath
+			request.ImageURL = savePath
 		}
 
 		user := sqlc.GetUserBackofficeRow{}
