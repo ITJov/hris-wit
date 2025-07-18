@@ -10,6 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"log" // <--- PASTIKAN INI DIIMPORT
 
 	"github.com/wit-id/blueprint-backend-go/common/constants"
 	"github.com/wit-id/blueprint-backend-go/common/httpservice"
@@ -46,10 +47,12 @@ import (
 )
 
 func RunEchoHTTPService(ctx context.Context, s *httpservice.Service, cfg config.KVStore) {
+	log.Println("DEBUG: Starting RunEchoHTTPService function...") // <-- Log 1
 	e := echo.New()
 	e.HTTPErrorHandler = handleEchoError(cfg)
 
 	e.Static("/uploads", "uploads")
+	log.Println("DEBUG: Echo instance created, setting up CORS middleware.") // <-- Log 2
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins:     []string{"https://hris-wit-chernojovs-projects.vercel.app"}, // <--- UBAH INI
@@ -57,6 +60,7 @@ func RunEchoHTTPService(ctx context.Context, s *httpservice.Service, cfg config.
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, constants.DefaultAllowHeaderToken, constants.DefaultAllowHeaderRefreshToken},
 	}))
+	log.Println("DEBUG: CORS middleware configured.") // <-- Log 3
 
 	runtimeCfg := echokit.NewRuntimeConfig(cfg, "restapi")
 	runtimeCfg.HealthCheckFunc = s.GetServiceHealth
@@ -64,8 +68,12 @@ func RunEchoHTTPService(ctx context.Context, s *httpservice.Service, cfg config.
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "ok")
 	})
+	log.Println("DEBUG: Root / route hit.")        // <-- Log 4 (jika ada yang mengakses root)
+	log.Println("DEBUG: Adding AuthToken routes.") // <-- Log 5
 
 	authTokenApp.AddRouteAuthToken(s, cfg, e)
+	log.Println("DEBUG: AuthToken routes added.") // <-- Log 6
+
 	authorizationBackofficeApp.AddRouteAuthorizationBackoffice(s, cfg, e)
 	authorizationHandheldApp.AddRouteAuthorizationHandheld(s, cfg, e)
 
@@ -97,10 +105,15 @@ func RunEchoHTTPService(ctx context.Context, s *httpservice.Service, cfg config.
 	usageHistoryApp.AddRouteUsageHistory(s, cfg, e)
 	vendorKontakApp.AddRouteVendorAndKontak(s, cfg, e)
 	dashboardApp.AddRouteDashboard(s, cfg, e)
+	log.Println("DEBUG: Setting route config.") // <-- Log 7
 
 	// set config routes for role access
 	httpservice.SetRouteConfig(ctx, s, cfg, e)
+	log.Println("DEBUG: Route config set.")         // <-- Log 8
+	log.Println("DEBUG: Attempting to run server.") // <-- Log 9
 
 	// run actual server
 	echokit.RunServerWithContext(ctx, e, runtimeCfg)
+	log.Println("DEBUG: Server stopped.") // <-- Log 10 (Ini hanya akan terlihat jika server berhenti dengan graceful)
+
 }
