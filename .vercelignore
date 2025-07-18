@@ -1,0 +1,2 @@
+# Exclude problematic Go assembly file from vendor directory
+api/vendor/github.com/cespare/xxhash/v2/xxhash_amd64.s
