@@ -52,7 +52,7 @@ func RunEchoHTTPService(ctx context.Context, s *httpservice.Service, cfg config.
 	e.Static("/uploads", "uploads")
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins:     []string{"*"},
+		AllowOrigins:     []string{"https://hris-wit-chernojovs-projects.vercel.app"}, // <--- UBAH INI
 		AllowCredentials: true,
 		AllowMethods:     []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete, http.MethodOptions},
 		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, constants.DefaultAllowHeaderToken, constants.DefaultAllowHeaderRefreshToken},
@@ -80,8 +80,8 @@ func RunEchoHTTPService(ctx context.Context, s *httpservice.Service, cfg config.
 	application4.AddRouteTask(s, cfg, e)
 	application5.AddRouteAttachment(s, cfg, e)
 	emailApp.AddRouteEmail(s, cfg, e)
-  
-  dataPelamarApp.AddRouteUserDataPelamar(s, cfg, e)
+
+	dataPelamarApp.AddRouteUserDataPelamar(s, cfg, e)
 	lowonganPekerjaanApp.AddRouteLowonganPekerjaan(s, cfg, e)
 	dataPegawaiApp.AddRouteDataPegawai(s, cfg, e)
 

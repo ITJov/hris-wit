@@ -60,7 +60,7 @@ func main() {
 	// CORS Default (mengizinkan semua origin selama development)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:5123"},
+		AllowOrigins: []string{"https://hris-wit-chernojovs-projects.vercel.app"}, // <--- UBAH INI
 		AllowMethods: []string{echo.GET, echo.POST, echo.PUT, echo.DELETE},
 		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
 	}))
