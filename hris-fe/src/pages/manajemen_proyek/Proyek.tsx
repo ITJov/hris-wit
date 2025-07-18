@@ -105,7 +105,7 @@ export default function Proyek() {
   });
   const [editFormData, setEditFormData] = useState<ProjectFormData | null>(null);
 
-  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: null, direction: 'ascending' });
+  const [sortConfig] = useState<SortConfig>({ key: null, direction: 'ascending' });
 
   const API_BASE_URL = 'http://localhost:6969';
 
