@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
+import axios, { AxiosResponse } from 'axios';
 import { Bar, Pie } from 'react-chartjs-2';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -91,9 +91,12 @@ useEffect(() => {
           
           const listResults = await Promise.allSettled(listPromises);
           
-          const allLists: List[] = listResults
-            .filter(result => result.status === 'fulfilled' && result.value.data?.data)
-            .flatMap(result => result.value.data.data);
+
+    const allLists: List[] = listResults
+        .filter((result): result is PromiseFulfilledResult<AxiosResponse<{ data: List[] }>> => 
+            result.status === 'fulfilled' && result.value.data?.data
+        )
+        .flatMap(result => result.value.data.data);
           
           setLists(allLists);
         }

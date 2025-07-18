@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 // --- INTERFACE ---
@@ -138,9 +138,11 @@ const fetchAllData = async () => {
 
         const listResults = await Promise.allSettled(listPromises);
 
-        const allLists = listResults
-          .filter(result => result.status === 'fulfilled' && result.value.data?.data)
-          .flatMap(result => result.value.data.data);
+      const allLists = listResults
+        .filter((result): result is PromiseFulfilledResult<AxiosResponse<{ data: List[] }>> => 
+            result.status === 'fulfilled' && !!result.value.data?.data
+        )
+        .flatMap(result => result.value.data.data);
         
         setLists(allLists);
       }
@@ -182,9 +184,20 @@ const fetchAllData = async () => {
     formType: 'insert' | 'edit'
   ) => {
     const { name, value } = e.target;
-    const setter = formType === 'insert' ? setInsertFormData : setEditFormData;
-    setter(prev => prev ? ({ ...prev, [name]: value }) : null);
-  };
+
+    if (formType === 'insert') {
+      // Logika untuk insert form (tidak pernah null)
+      setInsertFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else {
+      // Logika untuk edit form (bisa null)
+      setEditFormData((prev) => 
+        prev ? { ...prev, [name]: value } : null
+      );
+    }
+};
 
   const handleInsertSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -242,39 +255,43 @@ const fetchAllData = async () => {
   
   const sortedProjects = useMemo(() => {
     let sortableItems = [...projects];
-    if (sortConfig.key !== null) {
-      sortableItems.sort((a, b) => {
-        let aValue: any;
-        let bValue: any;
-        switch (sortConfig.key) {
-          case 'project_status': case 'project_priority':
-            aValue = decodeEnum(a[sortConfig.key]);
-            bValue = decodeEnum(b[sortConfig.key]);
-            break;
-          case 'start_date': case 'due_date':
-            aValue = a[sortConfig.key]?.Valid ? new Date(a[sortConfig.key].Time).getTime() : 0;
-            bValue = b[sortConfig.key]?.Valid ? new Date(b[sortConfig.key].Time).getTime() : 0;
-            break;
-          default:
-            aValue = a[sortConfig.key];
-            bValue = b[sortConfig.key];
-            break;
-        }
-        if (aValue < bValue) return sortConfig.direction === 'ascending' ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === 'ascending' ? 1 : -1;
-        return 0;
-      });
+    const { key, direction } = sortConfig; // Destructure untuk kemudahan
+
+    // Lakukan pengecekan pada 'key'
+    if (key) {
+        // Simpan 'key' yang sudah pasti tidak null ke variabel baru
+        const sortKey = key;
+
+        sortableItems.sort((a, b) => {
+            let aValue: any;
+            let bValue: any;
+
+            // Gunakan variabel baru 'sortKey'
+            switch (sortKey) {
+                case 'project_status':
+                case 'project_priority':
+                    aValue = decodeEnum(a[sortKey]);
+                    bValue = decodeEnum(b[sortKey]);
+                    break;
+                case 'start_date':
+                case 'due_date':
+                    aValue = a[sortKey]?.Valid ? new Date(a[sortKey].Time).getTime() : 0;
+                    bValue = b[sortKey]?.Valid ? new Date(b[sortKey].Time).getTime() : 0;
+                    break;
+                default:
+                    // Di sini, sortKey pasti 'project_id'
+                    aValue = a[sortKey];
+                    bValue = b[sortKey];
+                    break;
+            }
+
+            if (aValue < bValue) return direction === 'ascending' ? -1 : 1;
+            if (aValue > bValue) return direction === 'ascending' ? 1 : -1;
+            return 0;
+        });
     }
     return sortableItems;
   }, [projects, sortConfig]);
-
-  const requestSort = (key: SortableKeys) => {
-    let direction: 'ascending' | 'descending' = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
 
   if (loading) return <div>Loading...</div>;
 

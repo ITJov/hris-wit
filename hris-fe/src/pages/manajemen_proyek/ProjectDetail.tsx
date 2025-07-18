@@ -317,7 +317,7 @@ export default function ProjectDetail() {
       const finalTasks = tasks.map(t => t.task_id === draggableId ? updatedTask : t);
       setTasks(finalTasks);
       const payload = buildUpdatePayload(taskToMove, { list_id: source.droppableId, task_order: newOrder }); 
-      axios.put(`${API_BASE_URL}/task/${draggableId}`, payload).catch(err => { fetchTasks(); });
+      axios.put(`${API_BASE_URL}/task/${draggableId}`, payload).catch(_err => { fetchTasks(); });
       return;
     }
 
@@ -334,7 +334,7 @@ export default function ProjectDetail() {
     const finalTasks = tasks.map(t => t.task_id === draggableId ? { ...t, list_id: destination.droppableId, task_order: { Float64: newOrder, Valid: true } } : t);
     setTasks(finalTasks);
     const payload = buildUpdatePayload(taskToMove, { list_id: destination.droppableId, task_order: newOrder });
-    axios.put(`${API_BASE_URL}/task/${draggableId}`, payload).catch(error => { fetchTasks(); });
+    axios.put(`${API_BASE_URL}/task/${draggableId}`, payload).catch(_error => { fetchTasks(); });
   };
 
   if (!project) return <div className="p-8 text-center">Loading...</div>;

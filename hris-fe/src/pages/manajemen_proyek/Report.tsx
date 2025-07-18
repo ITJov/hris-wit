@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -81,9 +81,11 @@ export default function Report() {
 
           const listResults = await Promise.allSettled(listPromises);
 
-          const allLists = listResults
-            .filter(result => result.status === 'fulfilled' && result.value.data?.data)
-            .flatMap(result => result.value.data.data);
+        const allLists = listResults
+          .filter((result): result is PromiseFulfilledResult<any> =>
+              result.status === 'fulfilled' && !!result.value.data?.data
+          )
+          .flatMap(result => result.value.data.data);
 
           setLists(allLists);
         }
