@@ -192,7 +192,7 @@ function KeluargaTab({keluarga, anak, saudara_kandung}: {
             <div>
                 <h3 className="text-lg font-semibold border-b pb-2 mb-4">Data Pasangan & Orang Tua</h3>
                 {keluarga ? (
-                    <DetailGrid data={keluarga} />
+                    <DetailGrid data={keluarga} renderFunc={renderValue} />
                 ) : (
                     <p className="text-sm text-gray-500">Tidak ada data pasangan & orang tua.</p>
                 )}
@@ -337,7 +337,5 @@ export default function DetailKaryawan() {
         </div>
     );
 }
-
-// Komponen helper untuk menampilkan grid detail
 
 

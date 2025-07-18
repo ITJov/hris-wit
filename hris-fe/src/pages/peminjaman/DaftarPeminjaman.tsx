@@ -3,11 +3,6 @@ import { Card, Badge } from "flowbite-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-interface SqlNullString {
-  String: string;
-  Valid: boolean;
-}
-
 interface Peminjaman {
   peminjaman_id: string;
   nama_inventaris: string;

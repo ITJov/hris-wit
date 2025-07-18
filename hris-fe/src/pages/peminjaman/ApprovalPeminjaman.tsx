@@ -1,13 +1,7 @@
 import { useState, useEffect } from "react";
-import { Button, Card, Badge } from "flowbite-react";
+import { Button, Card } from "flowbite-react";
 import axios from "axios";
 import { toast } from "react-toastify";
-
-// Helper interface untuk Go's sql.NullString JSON structure
-interface SqlNullString {
-  String: string;
-  Valid: boolean;
-}
 
 interface PendingPeminjaman {
   peminjaman_id: string;
