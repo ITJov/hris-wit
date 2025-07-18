@@ -3,8 +3,11 @@
     { "source": "/api/(.*)", "destination": "/api" }
   ],
   "functions": {
-    "api/**/*.go": {
+    "api/cmd/api/application.go": {
       "runtime": "@vercel/go@3.0.0"
     }
-  }
+  },
+  "installCommand": "yarn install --cwd hris-fe && go mod tidy -C api && go mod vendor -C api",
+  "buildCommand": "yarn --cwd hris-fe build",
+  "outputDirectory": "hris-fe/dist"
 }
