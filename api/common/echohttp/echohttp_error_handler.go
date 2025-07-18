@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func handleEchoError(_ config.KVStore) echo.HTTPErrorHandler {
+func HandleEchoError(_ config.KVStore) echo.HTTPErrorHandler {
 	return func(err error, ctx echo.Context) {
 		var echoError *echo.HTTPError
 
